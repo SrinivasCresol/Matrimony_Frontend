@@ -1,0 +1,24 @@
+.add_btn {
+  background: whitesmoke;
+  border: none;
+}
+
+.bg-con {
+  background-image: url("https://matrimony.cresolinfoserv.com/images/banner.jpg");
+  background-size: cover;
+  max-width: 100%;
+  padding: 70px;
+}
+
+.bg-container {
+  max-width: 100%;
+}
+
+.footer {
+  max-width: 100%;
+}
+
+.modals {
+  background-image: url("https://matrimony.cresolinfoserv.com/images/Kongumudi.jpg");
+  background-size: cover;
+}
