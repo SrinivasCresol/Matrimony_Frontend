@@ -1,8 +1,12 @@
 import { commonRequest } from "./ApiCall";
 import { BASE_URL } from "./Helper";
 
+export const uploadFunction = async (data) => {
+  return await commonRequest("POST", `${BASE_URL}/uploads`, data)
+}
+
 export const registerFunction = async (data, header) => {
-  return await commonRequest("POST", `${BASE_URL}/user/register`, data, header);
+  return await commonRequest("POST", `${BASE_URL}/register`, data, header);
 };
 
 export const getUserFunction = async (search, gender, status, sort, page) => {

@@ -38,7 +38,7 @@ export default function ProfileCard({
                   {index + 1 + (page - 1) * 10}
                   <div className="d-flex flex-row justify-content-between p-2 m-2">
                     <img
-                      src={item.profile}
+                      src={`https://cresol.s3.ap-south-1.amazonaws.com/${item.profile}`}
                       alt="profile"
                       style={{ width: "100px" }}
                     />

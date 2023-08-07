@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import Modal from "react-bootstrap/Modal";
 import Select from "react-select";
 import Spinner from "../Components/Spinner";
-// import { registerFunction } from "../Services/Apis";
+// import { registerFunction, uploadFunction } from "../Services/Apis";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -72,7 +72,7 @@ export default function Register({ showModal, handleClose }) {
       formData.append("file", image);
 
       const uploadResponse = await axios.post(
-        "https://s3-backend-file-upload.onrender.com/upload",
+        `${BASE_URL}/uploads`,
         formData,
         {
           headers: {
@@ -121,7 +121,7 @@ export default function Register({ showModal, handleClose }) {
     } = inputData;
     try {
       const registrationResponse = await axios.post(
-        `${BASE_URL}/user/register`,
+        `${BASE_URL}/register`,
         {
           name,
           surName,
@@ -150,7 +150,7 @@ export default function Register({ showModal, handleClose }) {
           email,
           address,
           status,
-          file,
+          profile: file,
         },
         {
           headers: {

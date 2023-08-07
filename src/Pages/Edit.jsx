@@ -9,37 +9,38 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { singleUserGetFunction, editFunction } from "../Services/Apis";
-import { BASE_URL } from "../Services/Helper";
+import Modal from "react-bootstrap/Modal";
 
-export default function Edit() {
+export default function Edit({ showModal, handleClose }) {
   const [inputData, setInputData] = useState({
     name: "",
-    dateOfBirth: "",
-    fatherName: "",
-    motherName: "",
-    city: "",
-    birthStar: "",
-    colour: "",
-    education: "",
-    income: "",
+    surName: "",
+    gender: "",
     caste: "",
+    dateOfBirth: "",
+    birthStar: "",
     birthPlace: "",
-    height: "",
     gotra: "",
     zodiacSign: "",
+    height: "",
+    colour: "",
+    city: "",
+    education: "",
     profession: "",
+    companyName: "",
+    income: "",
+    fatherName: "",
+    motherName: "",
+    fatherOccupation: "",
+    motherOccupation: "",
     detailsOfBrideOrGroomWealth: "",
-    parentsDetails: "",
-    parentsFamilyDetails: "",
-    address: "",
     mothersRelativeDetails: "",
     fathersRelativeDetails: "",
-    email: "",
     mobile: "",
-    gender: "",
+    email: "",
+    address: "",
   });
 
-  const [preview, setPreview] = useState("");
   const [status, setStatus] = useState("Active");
   const [image, setImage] = useState("");
   const [imgData, setImgData] = useState("");
@@ -62,9 +63,9 @@ export default function Edit() {
     setStatus(e.value);
   };
 
-  const setProfile = (e) => {
-    setImage(e.target.files[0]);
-  };
+  // const setProfile = (e) => {
+  //   setImage(e.target.files[0]);
+  // };
 
   const userProfileGet = async () => {
     const response = await singleUserGetFunction(id);
@@ -73,6 +74,7 @@ export default function Edit() {
       setInputData(response.data);
       setStatus(response.data.status);
       setImgData(response.data.profile);
+      console.log(response.data, "imdddata");
     } else {
       console.log("error");
     }
@@ -82,33 +84,37 @@ export default function Edit() {
     e.preventDefault();
     const {
       name,
-      dateOfBirth,
-      fatherName,
-      motherName,
-      city,
-      birthStar,
-      colour,
-      education,
-      income,
+      surName,
+      gender,
       caste,
+      dateOfBirth,
+      birthStar,
       birthPlace,
-      height,
       gotra,
       zodiacSign,
+      height,
+      colour,
+      city,
+      education,
       profession,
+      companyName,
+      income,
+      fatherName,
+      motherName,
+      fatherOccupation,
+      motherOccupation,
       detailsOfBrideOrGroomWealth,
-      parentsDetails,
-      parentsFamilyDetails,
-      address,
       mothersRelativeDetails,
       fathersRelativeDetails,
-      email,
       mobile,
-      gender,
+      email,
+      address,
     } = inputData;
 
     if (name === "") {
       toast.error("Name is Required!");
+    } else if (surName === "") {
+      toast.error("SurName Required");
     } else if (dateOfBirth === "") {
       toast.error("Date Of Birth is Required!");
     } else if (fatherName === "") {
@@ -129,6 +135,8 @@ export default function Edit() {
       toast.error("Caste is Required!");
     } else if (birthPlace === "") {
       toast.error("Birth Place is Required!");
+    } else if (companyName) {
+      toast.error("Company Name Required");
     } else if (height === "") {
       toast.error("Height is Required!");
     } else if (gotra === "") {
@@ -139,10 +147,10 @@ export default function Edit() {
       toast.error("Profession is Required!");
     } else if (detailsOfBrideOrGroomWealth === "") {
       toast.error("Details Of Bride Or Groom Wealth is Required!");
-    } else if (parentsDetails === "") {
-      toast.error("Parents Details is Required!");
-    } else if (parentsFamilyDetails === "") {
-      toast.error("Parents Family Details is Required!");
+    } else if (fatherOccupation === "") {
+      toast.error("Father Occupation Details is Required!");
+    } else if (motherOccupation === "") {
+      toast.error("Mother Occupation Details is Required!");
     } else if (address === "") {
       toast.error("Address is Required!");
     } else if (mothersRelativeDetails === "") {
@@ -161,11 +169,10 @@ export default function Edit() {
       toast.error("Gender is Required!");
     } else if (status === "") {
       toast.error("Status is Required!");
-    } else if (image === "") {
-      toast.error("Profile is Required!");
     } else {
       const data = new FormData();
       data.append("name", name);
+      data.append("surName", surName);
       data.append("dateOfBirth", dateOfBirth);
       data.append("fatherName", fatherName);
       data.append("motherName", motherName);
@@ -181,8 +188,9 @@ export default function Edit() {
       data.append("zodiacSign", zodiacSign);
       data.append("profession", profession);
       data.append("detailsOfBrideOrGroomWealth", detailsOfBrideOrGroomWealth);
-      data.append("parentDetails", parentsDetails);
-      data.append("parentsFamilyDetails", parentsFamilyDetails);
+      data.append("fatherOccupation", fatherOccupation);
+      data.append("motherOccupation", motherOccupation);
+      data.append("companyName", companyName);
       data.append("address", address);
       data.append("mothersRelativeDetails", mothersRelativeDetails);
       data.append("fathersRelativeDetails", fathersRelativeDetails);
@@ -209,10 +217,6 @@ export default function Edit() {
   }, [id]);
 
   useEffect(() => {
-    if (image) {
-      setImgData("");
-      setPreview(URL.createObjectURL(image));
-    }
     setTimeout(() => {
       setShowSpin(false);
     }, 500);
@@ -223,373 +227,396 @@ export default function Edit() {
       {showSpin ? (
         <Spinner />
       ) : (
-        <div className="container">
-          <h2 className="text-center mt-1">Update Your Details</h2>
-          <Card className="shadow mt-3 p-3">
-            <div className="profile_div text-center">
-              <img
-                src={image ? preview : `${BASE_URL}/uploads/${imgData}`}
-                alt="img"
-                style={{
-                  maxWidth: "100px",
-                  borderRadius: "50%",
-                  border: "1px solid #111",
-                }}
-              />
-            </div>
-            <Form>
-              <Row>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Bride/Groom Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={inputData.name}
-                    onChange={setInputValue}
-                    placeholder="Enter FirstName"
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3 col-lg-6" controlId="formBasicDate">
-                  <Form.Label>Date of Birth</Form.Label>
-                  <Form.Control
-                    type="date"
-                    name="dateOfBirth"
-                    value={inputData.dateOfBirth}
-                    onChange={setInputValue}
-                    placeholder="Select Date of Birth"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Father Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="fatherName"
-                    value={inputData.fatherName}
-                    onChange={setInputValue}
-                    placeholder="Enter Father Name"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Mother Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="motherName"
-                    value={inputData.motherName}
-                    onChange={setInputValue}
-                    placeholder="Enter Mother Name"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Enter Your City</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="city"
-                    value={inputData.city}
-                    onChange={setInputValue}
-                    placeholder="Enter Your City"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Birth Star</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="birthStar"
-                    value={inputData.birthStar}
-                    onChange={setInputValue}
-                    placeholder="Enter Birth Star"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Colour</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="colour"
-                    value={inputData.colour}
-                    onChange={setInputValue}
-                    placeholder="Enter Colour"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Education</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="education"
-                    value={inputData.education}
-                    onChange={setInputValue}
-                    placeholder="Enter Education"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Income</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="income"
-                    value={inputData.income}
-                    onChange={setInputValue}
-                    placeholder="Enter Income"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Caste</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="caste"
-                    value={inputData.caste}
-                    onChange={setInputValue}
-                    placeholder="Enter Caste"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Birth Place</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="birthPlace"
-                    value={inputData.birthPlace}
-                    onChange={setInputValue}
-                    placeholder="Enter Birth Place"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Height</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="height"
-                    value={inputData.height}
-                    onChange={setInputValue}
-                    placeholder="Enter Height"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Gotra</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="gotra"
-                    value={inputData.gotra}
-                    onChange={setInputValue}
-                    placeholder="Enter Gotra"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Zodiac Sign</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="zodiacSign"
-                    value={inputData.zodiacSign}
-                    onChange={setInputValue}
-                    placeholder="Enter Zodiac Sign"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Profession</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="profession"
-                    value={inputData.profession}
-                    onChange={setInputValue}
-                    placeholder="Enter Profession"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Details of Bride or Groom Wealth</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="detailsOfBrideOrGroomWealth"
-                    value={inputData.detailsOfBrideOrGroomWealth}
-                    onChange={setInputValue}
-                    placeholder="Enter Details of Bride or Groom Wealth"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Parents Details</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="parentsDetails"
-                    value={inputData.parentsDetails}
-                    onChange={setInputValue}
-                    placeholder="Enter Parents Details"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Parents Family Details</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="parentsFamilyDetails"
-                    value={inputData.parentsFamilyDetails}
-                    onChange={setInputValue}
-                    placeholder="Enter Parents Family Details"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="address"
-                    value={inputData.address}
-                    onChange={setInputValue}
-                    placeholder="Enter Address"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Mother Relative Details</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="mothersRelativeDetails"
-                    value={inputData.mothersRelativeDetails}
-                    onChange={setInputValue}
-                    placeholder="Enter Mother Relative Details"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Father Relative Details</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="fathersRelativeDetails"
-                    value={inputData.fathersRelativeDetails}
-                    onChange={setInputValue}
-                    placeholder="Enter Father Relative Details"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={inputData.email}
-                    onChange={setInputValue}
-                    placeholder="Enter Email"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Mobile</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="mobile"
-                    value={inputData.mobile}
-                    onChange={setInputValue}
-                    placeholder="Enter Mobile"
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Select Your Status</Form.Label>
-                  <Select
-                    options={options}
-                    onChange={setStatusValue}
-                    defaultValue={status}
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Select Your Gender</Form.Label>
-                  <Form.Check
-                    type={"radio"}
-                    label={`Male`}
-                    name="gender"
-                    value={"Male"}
-                    onChange={setInputValue}
-                    checked={inputData.gender === "Male" ? true : false}
-                  />
-                  <Form.Check
-                    type={"radio"}
-                    label={`Female`}
-                    name="gender"
-                    value={"Female"}
-                    onChange={setInputValue}
-                    checked={inputData.gender === "Female" ? true : false}
-                  />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6"
-                  controlId="formBasicEmail"
-                >
-                  <Form.Label>Select Your Profile</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="profile"
-                    onChange={setProfile}
-                    placeholder="Select Your Profile"
-                  />
-                </Form.Group>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  onClick={submitUserData}
-                >
-                  Submit
-                </Button>
-              </Row>
-            </Form>
-          </Card>
+        <div id="registerModal" className="modals">
+          <Modal show={showModal} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Register Your Details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Card className="shadow mt-3 p-3">
+                <Form>
+                  <Row>
+                    <h2>Personal Information</h2>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="name"
+                        value={inputData.name}
+                        onChange={setInputValue}
+                        placeholder="Enter Name"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Sur Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="surName"
+                        value={inputData.surName}
+                        onChange={setInputValue}
+                        placeholder="Enter Sur Name"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Select Your Gender</Form.Label>
+                      <Form.Check
+                        type={"radio"}
+                        label={`Male`}
+                        name="gender"
+                        value={"Male"}
+                        onChange={setInputValue}
+                      />
+                      <Form.Check
+                        type={"radio"}
+                        label={`Female`}
+                        name="gender"
+                        value={"Female"}
+                        onChange={setInputValue}
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Caste</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="caste"
+                        value={inputData.caste}
+                        onChange={setInputValue}
+                        placeholder="Enter Caste"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicDate"
+                    >
+                      <Form.Label>Date of Birth</Form.Label>
+                      <Form.Control
+                        type="datetime-local"
+                        name="dateOfBirth"
+                        value={inputData.dateOfBirth}
+                        onChange={setInputValue}
+                        placeholder="Select Date of Birth"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Birth Star</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="birthStar"
+                        value={inputData.birthStar}
+                        onChange={setInputValue}
+                        placeholder="Enter Birth Star"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Birth Place</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="birthPlace"
+                        value={inputData.birthPlace}
+                        onChange={setInputValue}
+                        placeholder="Enter Birth Place"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Gotra</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="gotra"
+                        value={inputData.gotra}
+                        onChange={setInputValue}
+                        placeholder="Enter Gotra"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Zodiac Sign</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="zodiacSign"
+                        value={inputData.zodiacSign}
+                        onChange={setInputValue}
+                        placeholder="Enter Zodiac Sign"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Height</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="height"
+                        value={inputData.height}
+                        onChange={setInputValue}
+                        placeholder="Enter Height"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Colour</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="colour"
+                        value={inputData.colour}
+                        onChange={setInputValue}
+                        placeholder="Enter Colour"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Enter Your City</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="city"
+                        value={inputData.city}
+                        onChange={setInputValue}
+                        placeholder="Enter Your City"
+                      />
+                    </Form.Group>
+                    {/* <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Select Your Profile</Form.Label>
+                      <Form.Control
+                        type="file"
+                        name="profile"
+                        onChange={setProfile}
+                        placeholder="Select Your Profile"
+                      />
+                    </Form.Group> */}
+                    <h2>Professional Details</h2>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Education</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="education"
+                        value={inputData.education}
+                        onChange={setInputValue}
+                        placeholder="Enter Education"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Profession</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="profession"
+                        value={inputData.profession}
+                        onChange={setInputValue}
+                        placeholder="Enter Profession"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Company Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="companyName"
+                        value={inputData.companyName}
+                        onChange={setInputValue}
+                        placeholder="Enter Company Name"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Income</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="income"
+                        value={inputData.income}
+                        onChange={setInputValue}
+                        placeholder="Enter Income"
+                      />
+                    </Form.Group>
+                    <h2>Family Information</h2>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Father Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="fatherName"
+                        value={inputData.fatherName}
+                        onChange={setInputValue}
+                        placeholder="Enter Father Name"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Mother Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="motherName"
+                        value={inputData.motherName}
+                        onChange={setInputValue}
+                        placeholder="Enter Mother Name"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Father Occupation</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="fatherOccupation"
+                        value={inputData.fatherOccupation}
+                        onChange={setInputValue}
+                        placeholder="Enter Father Occupation"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Mother Occupation</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="motherOccupation"
+                        value={inputData.motherOccupation}
+                        onChange={setInputValue}
+                        placeholder="Enter Mother Occupation"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-12"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Details of Bride or Groom Wealth</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="detailsOfBrideOrGroomWealth"
+                        value={inputData.detailsOfBrideOrGroomWealth}
+                        onChange={setInputValue}
+                        placeholder="Enter Details of Bride or Groom Wealth"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Mother Relative Details</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="mothersRelativeDetails"
+                        value={inputData.mothersRelativeDetails}
+                        onChange={setInputValue}
+                        placeholder="Enter Mother Relative Details"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Father Relative Details</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="fathersRelativeDetails"
+                        value={inputData.fathersRelativeDetails}
+                        onChange={setInputValue}
+                        placeholder="Enter Father Relative Details"
+                      />
+                    </Form.Group>
+                    <h2>Contact Information</h2>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Mobile</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="mobile"
+                        value={inputData.mobile}
+                        onChange={setInputValue}
+                        placeholder="Enter Mobile"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Email address</Form.Label>
+                      <Form.Control
+                        type="email"
+                        name="email"
+                        value={inputData.email}
+                        onChange={setInputValue}
+                        placeholder="Enter Email"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Full Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="address"
+                        value={inputData.address}
+                        onChange={setInputValue}
+                        placeholder="Enter Address"
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      className="mb-3 col-lg-6"
+                      controlId="formBasicEmail"
+                    >
+                      <Form.Label>Select Your Status</Form.Label>
+                      <Select options={options} onChange={setStatusValue} />
+                    </Form.Group>
+                  </Row>
+                </Form>
+              </Card>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" type="submit" onClick={submitUserData}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <ToastContainer position="top-center" />
         </div>
       )}
